@@ -1,4 +1,4 @@
-CREATE TABLE user (
+CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -23,6 +23,6 @@ CREATE TABLE user_categories (
     user_id INT NOT NULL,
     category_id INT NOT NULL,
     PRIMARY KEY (user_id, category_id),
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
