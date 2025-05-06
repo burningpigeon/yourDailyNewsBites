@@ -1,0 +1,256 @@
+openapi: 3.0.0
+info:
+  description: This is an API for the users of yourDailyNewsBites
+  version: 1.0.0
+  title: yourDailyNewsBites
+
+servers:
+  - url: http://localhost:8000/api
+security:
+  - SessionAuth: []
+
+tags:
+  - name: Authenticator
+    description: A way to authenticate users
+  - name: Users
+    description: Managing users
+  - name: Categories
+    description: Managing users categories
+
+paths:
+  /login:
+    post:
+      summary: Authenticate user and log them in
+      tags:
+        - Authenticator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Successfully logged in user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not authorized
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No account connected 
+        '500':
+          description: Interal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Something serverwise went wrong
+
+  /logout:
+    post:
+      summary: Log out the user
+      tags:
+        - Authenticator
+      security:
+        - SessionAuth: []
+      responses:
+        '200':
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged out successfully
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not authorized
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No account connected 
+        '500':
+          description: Interal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Something serverwise went wrong
+
+  /register:
+  post:
+    summary: Register and create a new user
+    tags:
+      - Authenticator
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registration successful. Verification email sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registration successful. Please verify your email.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Failed to register user
+
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No account connected 
+
+        '500':
+          description: Interal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Something serverwise went wrong
+      security: []
+
+  /verify-email:
+    get:
+      summary: Verify user's email using a token
+      tags:
+        - Authenticator
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "abc123xyz"
+      responses:
+        '200':
+          description: Email successfully verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email verified successfully. You can now log in.
+
+        '400':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or expired verification token
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No account connected 
+
+        '500':
+          description: Interal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Something serverwise went wrong
+
+  components:
+    securitySchemes:
+      SessionAuth:
+        type: apiKey
+        in: cookie
+        name: sessionId
+
+  schemas:
+    Login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+/users
+  
