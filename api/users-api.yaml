@@ -121,60 +121,60 @@ paths:
                     example: Something serverwise went wrong
 
   /register:
-  post:
-    summary: Register and create a new user
-    tags:
-      - Authenticator
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/RegisterRequest'
-      responses:
-        '201':
-          description: User registration successful. Verification email sent.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: User registration successful. Please verify your email.
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Failed to register user
+    post:
+      summary: Register and create a new user
+      tags:
+        - Authenticator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        responses:
+          '201':
+            description: User registration successful. Verification email sent.
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: User registration successful. Please verify your email.
+          '400':
+            description: Bad request
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: Failed to register user
 
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: No account connected 
+          '404':
+            description: User not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: No account connected 
 
-        '500':
-          description: Interal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Something serverwise went wrong
-      security: []
+          '500':
+            description: Interal server error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: Something serverwise went wrong
+        security: []
 
   /verify-email:
     get:
@@ -232,6 +232,56 @@ paths:
                     type: string
                     example: Something serverwise went wrong
 
+  /users:
+    get:
+    summary: Retrieve all users
+    description: Get a list of all registered users
+    tags:
+      - Users
+    security:
+      - SessionAuth: []
+    responses:
+        '200':
+          description: Successfully retrieved all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+        '400':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Invalid or expired verification token
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No account connected 
+
+        '500':
+          description: Interal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Something serverwise went wrong
+
   components:
     securitySchemes:
       SessionAuth:
@@ -251,6 +301,3 @@ paths:
           format: email
         password:
           type: string
-
-/users
-  
