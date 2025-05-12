@@ -1,18 +1,31 @@
-DELIMITER //
-DROP PROCEDURE IF EXISTS getUserCategories //
-CREATE PROCEDURE getUserCategories(
-    IN email_in VARCHAR(255)
+DROP FUNCTION IF EXISTS get_user_categories(VARCHAR);
+
+CREATE OR REPLACE FUNCTION get_user_categories(email_in VARCHAR)
+RETURNS TABLE (
+    user_id INT,
+    email VARCHAR,
+    category_id INT,
+    category_name VARCHAR
 )
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    user_id_val INT;
 BEGIN
-    DECLARE user_id_val INT;
-    SELECT user_id INTO user_id_val FROM users WHERE email = email_in;
+    SELECT u.user_id INTO user_id_val
+    FROM users u
+    WHERE u.email = email_in;
 
     IF user_id_val IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'User with this email does not exist';
-    ELSE
-        SELECT c.category_id, c.name FROM categories c
-        JOIN user_categories uc ON c.category_id = uc.category_id WHERE uc.user_id = user_id_val;
+        RAISE EXCEPTION 'User with this email does not exist';
     END IF;
-END //
-DELIMITER ;
+
+    RETURN QUERY
+    SELECT u.user_id, u.email, c.category_id, c.name
+    FROM users u
+    JOIN user_categories uc ON u.user_id = uc.user_id
+    JOIN categories c ON uc.category_id = c.category_id
+    WHERE u.user_id = user_id_val;
+END;
+$$;
+
