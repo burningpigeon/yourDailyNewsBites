@@ -1,15 +1,15 @@
-DELIMITER //
-DROP PROCEDURE IF EXISTS removeUser //
-CREATE PROCEDURE removeUser(
+CREATE OR REPLACE PROCEDURE remove_user(
     IN emailIn VARCHAR(100),
-    IN passwordHashIn VARCHAR(255)
 )
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    IF NOT EXISTS ( SELECT 1 FROM users WHERE email = emailIn AND password_hash = passwordHashIn) THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'User not found or incorrect password';
+    IF NOT EXISTS (
+        SELECT 1 FROM users WHERE email = emailIn 
+    ) THEN
+        RAISE EXCEPTION 'User not found';
     ELSE
-        DELETE FROM users WHERE email = emailIn AND password_hash = passwordHashIn;
+        DELETE FROM users WHERE email = emailIn 
     END IF;
-END //
-DELIMITER ;
+END;
+$$;
