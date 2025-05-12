@@ -8,8 +8,8 @@ CREATE TABLE users (
 CREATE TABLE verification (
     user_id INT PRIMARY KEY,
     verification_code VARCHAR(255) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE
 );
 
 -- All possible newsletter categories(i.e. Sports, Buisness..)
@@ -26,3 +26,4 @@ CREATE TABLE user_categories (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
+
