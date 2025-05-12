@@ -1,7 +1,10 @@
-DELIMITER //
-DROP PROCEDURE IF EXISTS getAllUsers //
-CREATE PROCEDURE getAllUsers()
+CREATE OR REPLACE FUNCTION get_all_users()
+RETURNS TABLE (email VARCHAR)
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    SELECT user_id, email, is_verified FROM users;
-END //
-DELIMITER ;
+    RETURN QUERY
+    SELECT u.email FROM users u;
+END;
+$$;
+
