@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    user_id INT SERIAL PRIMARY KEY,
+    user_id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     is_verified BOOLEAN DEFAULT FALSE
@@ -14,7 +14,7 @@ CREATE TABLE verification (
 
 -- All possible newsletter categories(i.e. Sports, Buisness..)
 CREATE TABLE categories (
-    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id SERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL
 );
 
