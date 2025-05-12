@@ -1,5 +1,5 @@
 CREATE OR REPLACE PROCEDURE remove_user(
-    IN emailIn VARCHAR(100),
+    IN emailIn VARCHAR(100)
 )
 LANGUAGE plpgsql
 AS $$
