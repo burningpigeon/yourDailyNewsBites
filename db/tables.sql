@@ -9,7 +9,7 @@ CREATE TABLE verification (
     user_id INT PRIMARY KEY,
     verification_code VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES "user"(user_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- All possible newsletter categories(i.e. Sports, Buisness..)
