@@ -1,15 +1,16 @@
-DELIMITER //
-DROP PROCEDURE IF EXISTS getUserByEmail //
-CREATE PROCEDURE getUserByEmail(
-    IN email_in VARCHAR(255)
-)
+CREATE OR REPLACE FUNCTION get_user_by_email(email_in VARCHAR)
+RETURNS TABLE (user_id INT, email VARCHAR, is_verified BOOLEAN)
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    -- Check if the user exists
-    IF NOT EXISTS (SELECT 1 FROM users WHERE email = email_in) THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Email does not exist.';
-    ELSE
-        SELECT user_id, email, is_verified FROM users WHERE email = email_in;
+    IF NOT EXISTS (
+        SELECT 1 FROM users WHERE email = email_in
+    ) THEN
+        RAISE EXCEPTION 'Email does not exist.';
     END IF;
-END //
-DELIMITER ;
+
+    RETURN QUERY
+    SELECT user_id, email, is_verified FROM users WHERE email = email_in;
+END;
+$$;
+
