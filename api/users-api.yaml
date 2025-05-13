@@ -282,6 +282,368 @@ paths:
                     type: string
                     example: Something serverwise went wrong
 
+  /users/{user_id}:
+    get:
+      summary: Retrieve details about a user
+      description: Gets details about a certain user
+      tags: 
+        - Users
+      security:
+        - SessionAuth: []
+      parameters:
+        - name: email_in
+          in: path
+          required: true
+          schema:
+            type: string
+          example: example@example.com
+      responses:
+        '200':
+          description: Successfully retrieved user details
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad request
+
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+
+    put:
+      summary: Update user email or password
+      description: Update a user's email and or password
+      tags:
+        - Users
+      security:
+        - SessionAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: newEmail@example.com
+                password:
+                  type: string
+                  format: password
+                  example: newStrongPassword123
+                
+      responses:
+        '201':
+          description: User updated successfully
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' 
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad request
+
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+    
+    delete:
+      summary: Delete a user's acccount
+      description: Removes a user's account and infomation
+      tags:
+        - Users
+      security:
+        - SessionAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: User removed successfully
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' 
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad request
+
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+
+  /categories/{user_id}:
+    get:
+      summary: gets all of the categories for a user
+      description: gets each users categories
+      tags:
+        - Categories
+      security:
+        - SessionAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: int
+          example: 1
+      responses:
+        '200':
+          description: Successfully retrieved user details
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categories'
+        
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad request
+
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+
+    post:
+      summary: Adds a category
+      description: Adds a category to the user's account
+      tags:
+        - Categories
+      security:
+        - SessionAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: int
+          example: 1
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: int
+          example: 1
+
+      responses:
+        '201':
+          description: User updated successfully
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' 
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad request
+
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+
+    delete:
+      summary: Removes a category
+      description: Removes a category from a user's account
+      tags:
+        - Categories
+      security:
+        - SessionAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: int
+          example: 1
+        - name: category_id
+          in: path
+          required: true
+          schema:
+            type: int
+          example: 1
+
+      responses:
+        '204':
+          description: User successfully removed
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' 
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad request
+
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+
   components:
     securitySchemes:
       SessionAuth:
@@ -301,3 +663,37 @@ paths:
           format: email
         password:
           type: string
+
+      User:
+        type: object
+        required:
+          - user_id
+          - email
+          - password_hash
+          - verified
+        properties:
+          user_id:
+            type: integer
+            example: 1
+          email:
+            type: string
+            example: example@example.com
+          password_hash:
+            type: string
+          verified:
+            type: boolean
+            example: false
+
+
+    Categories:
+      type: object
+      properties:
+        category_id: 
+          type: int
+          example: 1
+        name:
+          type: string
+          example: Politics
+        required:
+          - category_id
+          - name
