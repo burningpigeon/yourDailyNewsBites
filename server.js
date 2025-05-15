@@ -1,13 +1,11 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const userRoutes = require('./src/users/routes');
 
 const app = express();
 const port = process.env.API_PORT || 3000;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.get("/", (req, res) => {
     res.send("Hello World");
