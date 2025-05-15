@@ -1,4 +1,5 @@
 const pool = require('./db_access');
+const bcrypt = require('bcrypt');
 const { generateValidationCode } = require('./utils');
 
 
@@ -11,10 +12,21 @@ const getUsers = (req, res) => {
 
 const addUser = async(req, res) => {
     console.log("BODY:", req.body);
-    const { email, passwordHash} = req.body
-    if (!email || !passwordHash){
-        return res.status(400).json({error: 'Missing required fields: email, password'})
+    const { email, password, passwordVerify} = req.body
+    if (!email || !password){
+        return res.status(400).json({error: 'Missing required fields: email, password'});
     }
+
+    if (password.length <6 ){
+        return res.status(400).json({error: 'Password length must be greater than 6'});
+    }
+
+    if ( password != passwordVerify){
+        return res.status(400).json({error: 'Passwords have to match'});
+    }
+
+    const salt = await bcrypt.genSalt();
+    const passwordHash = await bcrypt.hash(password, salt);
 
     try{
         let verificationCode = generateValidationCode();
