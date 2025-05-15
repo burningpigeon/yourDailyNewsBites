@@ -43,7 +43,31 @@ const addUser = async(req, res) => {
     }
 };
 
+const getUser = async(req, res) => {
+    const { email } = req.query;
+
+    if (!email) {
+        return res.status(400).json({ error: 'Missing required query parameter: email' });
+    }
+
+    try {
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        return res.status(200).json({ user: result.rows[0] });
+    } 
+    catch (err) {
+        console.error('Internal server error', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
 module.exports = {
     getUsers,
     addUser,
+    getUser,
 }
