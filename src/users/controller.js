@@ -11,7 +11,6 @@ const getUsers = (req, res) => {
 };
 
 const addUser = async(req, res) => {
-    console.log("BODY:", req.body);
     const { email, password, passwordVerify} = req.body
     if (!email || !password){
         return res.status(400).json({error: 'Missing required fields: email, password'});
@@ -43,6 +42,33 @@ const addUser = async(req, res) => {
     }
 };
 
+const removeUser = async (req, res) =>{
+    const { email, password} = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Missing required fields: email and password' });
+    }
+
+    try{
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
+        if (result.rows.length === 0){
+            return res.status(400).json({error: 'User not found'});
+        }
+        
+        const user = result.rows[0];
+        const isMatched = await bcrypt.compare(password, user.password);
+        if (!isMatched){
+            return res.status(401).json({error: 'Incorrect password'});
+        }
+
+        await pool.query('DELETE FROM users WHERE email =$1', [email]);
+        return res.status(200).json({message: 'User successfully removed'});
+    }
+    catch(err){
+        return res.status(500).json({error: 'Internal server error'});
+    }
+};
+
 const getUser = async(req, res) => {
     const { email } = req.query;
 
@@ -70,4 +96,5 @@ module.exports = {
     getUsers,
     addUser,
     getUser,
+    removeUser,
 }

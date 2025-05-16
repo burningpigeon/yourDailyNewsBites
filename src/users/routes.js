@@ -6,5 +6,6 @@ const router = express.Router();
 router.get('/getUsers', controller.getUsers);
 router.get('/getUser', controller.getUser);
 router.post('/addUser', controller.addUser);
+router.delete('/addUser', controller.addUser);
 
 module.exports = router;
