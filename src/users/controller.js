@@ -91,10 +91,71 @@ const getUser = async(req, res) => {
     }
 };
 
+const changeEmail = async(req, res) => {
+    const { currentEmail, newEmail, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Missing required fields: email and password' });
+    }
+
+    try{
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [currentEmail]);
+        if (result.rows.length === 0){
+            return res.status(404).json({error: 'User not found'});
+        }
+        
+        const user = result.rows[0];
+        const isMatched = await bcrypt.compare(password, user.password);
+        if (!isMatched){
+            return res.status(401).json({error: 'Incorrect password'});
+        }
+
+        await pool.query('CALL change_email($1, $2, $3)', [ currentEmail, newEmail, password ]);
+        return res.status(201).json({message: 'Email successfully changed!'});
+    }
+    catch (err) {
+        if (err.message.includes('Email is already connected to an account')){
+            return res.status(400).json({error: 'Email is already connected to an account'});
+        }
+
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+const changePassword = async(req, res) =>{
+    const { email, currentPassword, newPassword} = req.body;
+
+    if (!email || !currentPassword || !newPassword) {
+        return res.status(400).json({ error: 'Missing required fields: email, old password and new password' });
+    }
+    try{
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [currentEmail]);
+        if (result.rows.length === 0){
+            return res.status(404).json({error: 'User not found'});
+        }
+        
+        const user = result.rows[0];
+        const isMatched = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatched){
+            return res.status(401).json({error: 'Incorrect password'});
+        }
+
+        const salt = await bcrypt.genSalt();
+        const newPasswordHashed = await bcrypt.hash(password, salt);
+
+        await pool.query('CALL change_email($1, $2, $3)', [ email, currentPassword, newPasswordHashed ]);
+        return res.status(201).json({message: 'Password successfully changed!'});
+    }
+    catch (err){
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
 
 module.exports = {
     getUsers,
     addUser,
     getUser,
     removeUser,
+    changeEmail,
+    changePassword,
 }

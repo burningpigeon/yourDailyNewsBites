@@ -7,4 +7,6 @@ function generateValidationCode(){
     return result;
 }
 
-module.exports = { generateValidationCode };
+module.exports = { 
+    generateValidationCode 
+};
