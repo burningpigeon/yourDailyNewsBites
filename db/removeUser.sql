@@ -3,14 +3,18 @@ CREATE OR REPLACE PROCEDURE remove_user(
 )
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    uid INT;
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM users WHERE email = emailIn
-    ) THEN
+    SELECT user_id INTO uid FROM users WHERE email = emailIn;
+
+    IF uid IS NULL THEN
         RAISE EXCEPTION 'User not found';
-    ELSE
-        DELETE FROM users WHERE email = emailIn;
     END IF;
+
+    DELETE FROM verification WHERE user_id = uid;
+    DELETE FROM user_categories WHERE user_id = uid;
+    DELETE FROM users WHERE user_id = uid;
 END;
 $$;
 

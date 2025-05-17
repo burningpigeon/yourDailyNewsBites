@@ -52,7 +52,7 @@ const removeUser = async (req, res) =>{
     try{
         const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
         if (result.rows.length === 0){
-            return res.status(400).json({error: 'User not found'});
+            return res.status(404).json({error: 'User not found'});
         }
         
         const user = result.rows[0];
@@ -93,8 +93,10 @@ const getUser = async(req, res) => {
 
 const changeEmail = async(req, res) => {
     const { currentEmail, newEmail, password } = req.body;
+    console.log("BODY:", req.body); 
 
-    if (!email || !password) {
+
+    if (!currentEmail || !password) {
         return res.status(400).json({ error: 'Missing required fields: email and password' });
     }
 
@@ -105,7 +107,7 @@ const changeEmail = async(req, res) => {
         }
         
         const user = result.rows[0];
-        const isMatched = await bcrypt.compare(password, user.password);
+        const isMatched = await bcrypt.compare(password, user.password_hash);
         if (!isMatched){
             return res.status(401).json({error: 'Incorrect password'});
         }
@@ -117,17 +119,22 @@ const changeEmail = async(req, res) => {
         if (err.message.includes('Email is already connected to an account')){
             return res.status(400).json({error: 'Email is already connected to an account'});
         }
-
+        console.log(err);
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
 const changePassword = async(req, res) =>{
-    const { email, currentPassword, newPassword} = req.body;
+    const { email, currentPassword, newPassword, newPasswordVerify} = req.body;
 
     if (!email || !currentPassword || !newPassword) {
-        return res.status(400).json({ error: 'Missing required fields: email, old password and new password' });
+        return res.status(400).json({ error: 'Missing required fields: email, old password and new passwords' });
     }
+
+    if ( newPassword != newPasswordVerify){
+        return res.status(400).json({error: 'Passwords have to match'});
+    }
+
     try{
         const result = await pool.query('SELECT * FROM get_user_by_email($1)', [currentEmail]);
         if (result.rows.length === 0){

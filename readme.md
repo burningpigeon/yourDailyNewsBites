@@ -9,6 +9,8 @@ yourDailyNewsBites/
  |   |   ├── db_access.js
  |   |   ├── routes.js
  |   |   ├── utils.js
+├── tests/
+ |   ├── ...allJestTests.test.js
 ├── .gitignore
 ├── jest.config.js
 ├── package-lock.json

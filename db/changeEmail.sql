@@ -24,6 +24,7 @@ BEGIN
     END IF;
 
     UPDATE users SET email = newEmail WHERE user_id = userId;
+    UPDATE 
 END;
 $$;
 
