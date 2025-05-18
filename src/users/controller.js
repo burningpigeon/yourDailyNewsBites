@@ -107,12 +107,13 @@ const changeEmail = async(req, res) => {
         }
         
         const user = result.rows[0];
+
         const isMatched = await bcrypt.compare(password, user.password_hash);
         if (!isMatched){
             return res.status(401).json({error: 'Incorrect password'});
         }
 
-        await pool.query('CALL change_email($1, $2, $3)', [ currentEmail, newEmail, password ]);
+        await pool.query('CALL change_email($1, $2, $3)', [ currentEmail, newEmail, user.password_hash ]);
         return res.status(201).json({message: 'Email successfully changed!'});
     }
     catch (err) {
