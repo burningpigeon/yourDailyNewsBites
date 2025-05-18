@@ -1,4 +1,6 @@
 # Project Structure
+
+**File Structure**
 ```
 yourDailyNewsBites/
 ├── db/
@@ -17,4 +19,45 @@ yourDailyNewsBites/
 ├── package.json
 ├── readme.md
 ├── server.js
+```
+
+**Database Schema**
+```
+a. users
+ - user_id (Primary Key)
+ - email
+ - password_hash (Hashed)
+ - is_verified
+
+b. verification
+ - user_id (Primary and Foreign Key)
+ - verification_code
+ - created_at
+
+c. categories
+ - category_id (Primary Key)
+ - name
+
+d. user_categories
+ - user_id (Primary and Foreign Key)
+ - category_id (Primary and Foreign Key)
+```
+
+**Endpoints**
+```
+a. authenication
+ - /api/auth/register (POST): Adds a new user
+ - /api/auth/verify (POST): Verifies a new user
+
+b. user management
+- /api/users/getUsers (GET): Returns a list of all users
+- /api/users/getUser (GET): Returns a specific user
+- /api/users/changeEmail (PUT): Replaces a user's email
+- /api/users/changePassword (PUT): Changes a user's password
+- /api/users/removeUser (DELETE): Removes a user's account
+
+c. categories
+- /api/categories/getCategories (GET): Return's a specific user's categories
+- /api/categories/addCategory (POST): Adds a new category to a users' account
+- /api/categories/removeCategory (DELETE): Removes a category from a user's account
 ```
