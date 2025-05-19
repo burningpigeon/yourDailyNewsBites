@@ -158,7 +158,73 @@ const changePassword = async(req, res) =>{
         console.log(err);
         return res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
+
+const addCategory = async(req, res) => {
+    const { email, category_id} = req.body;
+
+    if (!email || !category_id) {
+        return res.status(400).json({ error: 'Missing required fields: email and category id' });
+    }
+
+    try{
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
+        if (result.rows.length === 0){
+            return res.status(404).json({error: 'User not found'});
+        }
+
+        const user_id = result.rows[0].user_id;
+        await pool.query('CALL add_category($1, $2)', [user_id, category_id]);
+        return res.status(201).json({message: 'Category succesfully added'});
+    }
+    catch(err){
+        if (err.message.includes('User is already subscribed to this category')){
+            return res.status(400).json({error: 'User is already subscribed to this category'});
+        }
+
+        if (err.message.includes('Category not found')){
+            return res.status(404).json({error: 'Category not found'});
+        }
+
+        console.log(err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+const removeCategory = async(req, res) => {
+    const { email, category_id} = req.body;
+
+    if (!email || !category_id) {
+        return res.status(400).json({ error: 'Missing required fields: email and category id' });
+    }
+
+    try{
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
+        if (result.rows.length === 0){
+            return res.status(404).json({error: 'User not found'});
+        }
+
+        const user_id = result.rows[0].user_id;
+        await pool.query('CALL remove_category($1, $2)', [user_id, category_id]);
+        return res.status(201).json({message: 'Category succesfully removed'});
+    }
+    catch(err){
+        if (err.message.includes('User is not subscribed to this category')){
+            return res.status(400).json({error: 'User is not subscribed to this category'});
+        }
+
+        if (err.message.includes('Category not found')){
+            return res.status(404).json({error: 'Category not found'});
+        }
+
+        if (err.message.includes('User must be subscribed to at least one category')){
+            return res.status(400).json({error: 'User must be subscribed to at least one category'});
+        }
+
+        console.log(err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 module.exports = {
     getUsers,
@@ -167,4 +233,6 @@ module.exports = {
     removeUser,
     changeEmail,
     changePassword,
+    addCategory,
+    removeCategory,
 }
