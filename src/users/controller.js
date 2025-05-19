@@ -41,6 +41,45 @@ const addUser = async(req, res) => {
     }
 };
 
+const verfiyUser = async (req, res) =>{
+    const {email, verificationCode, currentTime} = req.body;
+    if (!email || !verificationCode || !currentTime){
+        return res.status(400).json({error: 'Missing required fields: email, verification code, current time'});
+    }
+    try{
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
+        if (result.rows.length === 0){
+            return res.status(404).json({error: 'User not found'});
+        }
+
+        const verficationInfo = await pool.query('SELECT * FROM get_verification_info($1)', [email]);
+        if (verficationInfo.rows.length === 0){
+            return res.status(400).json({error: 'User not registered or already verified.'});
+        }
+
+        if ( verificationCode != verficationInfo[0]){
+            return res.status(400).json({error: 'Verfication code is incorrect'});
+        }
+
+        const currentTime = getCurrentTimestamp();
+        const verificationCodeValid = isVerificationCodeValid(currentTime, verficationInfo[1]);
+
+        if (verificationCodeValid === false){
+            const newVerificationCode = generateValidationCode();
+            await pool.query('CALL update_verification($1, $2, $3)', [email, newVerificationCode, currentTime]);
+            return res.status(400).json({error: 'Verfication code expired. A new code has been sent to your email.'});
+        }
+        else{
+            await pool.query('CALL verify_user($1)', [email]);
+            return res.status(201).json({message: 'User succesfully verified!'});
+        }
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal server error'});        
+    }
+}
+
 const removeUser = async (req, res) =>{
     const { email, password} = req.body;
 
@@ -254,4 +293,5 @@ module.exports = {
     addCategory,
     removeCategory,
     getUsersCategories,
+    verifyUser,
 }
