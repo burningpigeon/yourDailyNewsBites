@@ -1,19 +1,17 @@
-CREATE OR REPLACE PROCEDURE change_password (
-    IN user_id_in INT,
-    IN currentPasswordHash VARCHAR(255), 
-    IN newPasswordHash VARCHAR(255)
+CREATE OR REPLACE PROCEDURE change_password(
+    IN emailIn VARCHAR,
+    IN newPasswordHash VARCHAR
 )
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    userId INT;
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM users WHERE user_id = user_id_in AND password_hash = currentPasswordHash
-    ) THEN
-        RAISE EXCEPTION 'Incorrect current password';
+    SELECT user_id INTO userId FROM users WHERE LOWER(email) = LOWER(emailIn);
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'User not found';
     END IF;
 
-    UPDATE users
-    SET password_hash = newPasswordHash
-    WHERE user_id = user_id_in;
+    UPDATE users SET password_hash = newPasswordHash WHERE user_id = userId;
 END;
 $$;

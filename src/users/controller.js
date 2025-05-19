@@ -24,7 +24,6 @@ const addUser = async(req, res) => {
         return res.status(400).json({error: 'Passwords have to match'});
     }
 
-    const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
 
     try{
@@ -54,9 +53,9 @@ const removeUser = async (req, res) =>{
         if (result.rows.length === 0){
             return res.status(404).json({error: 'User not found'});
         }
-        
+
         const user = result.rows[0];
-        const isMatched = await bcrypt.compare(password, user.password);
+        const isMatched = await bcrypt.compare(password, user.password_hash);
         if (!isMatched){
             return res.status(401).json({error: 'Incorrect password'});
         }
@@ -65,6 +64,7 @@ const removeUser = async (req, res) =>{
         return res.status(200).json({message: 'User successfully removed'});
     }
     catch(err){
+        console.log(err);
         return res.status(500).json({error: 'Internal server error'});
     }
 };
@@ -137,24 +137,25 @@ const changePassword = async(req, res) =>{
     }
 
     try{
-        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [currentEmail]);
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
         if (result.rows.length === 0){
             return res.status(404).json({error: 'User not found'});
         }
         
         const user = result.rows[0];
-        const isMatched = await bcrypt.compare(currentPassword, user.password);
+        const isMatched = await bcrypt.compare(currentPassword, user.password_hash);
         if (!isMatched){
             return res.status(401).json({error: 'Incorrect password'});
         }
 
         const salt = await bcrypt.genSalt();
-        const newPasswordHashed = await bcrypt.hash(password, salt);
+        const newPasswordHashed = await bcrypt.hash(newPassword, salt);
 
-        await pool.query('CALL change_email($1, $2, $3)', [ email, currentPassword, newPasswordHashed ]);
+        await pool.query('CALL change_password($1, $2)', [email, newPasswordHashed]);
         return res.status(201).json({message: 'Password successfully changed!'});
     }
     catch (err){
+        console.log(err);
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
