@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const userRoutes = require('./src/users/routes');
+const routes = require('./src/users/routes');
 
 const app = express();
 const port = process.env.API_PORT || 3000;
@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 });
 
 
-app.use("/api/v1/users", userRoutes);
+app.use("/api", routes);
 
 app.listen(port, () => {
     console.log('App listening on port ' + port);
