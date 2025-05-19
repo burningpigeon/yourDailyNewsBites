@@ -16,5 +16,6 @@ router.put('/users/changePassword', controller.changePassword);
 //c. categories
 router.post('/categories/addCategory', controller.addCategory);
 router.delete('/categories/removeCategory', controller.removeCategory);
+router.get('/categories/getUsersCategories', controller.getUsersCategories);
 
 module.exports = router;
