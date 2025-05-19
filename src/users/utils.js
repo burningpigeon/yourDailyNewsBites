@@ -7,6 +7,21 @@ function generateValidationCode(){
     return result;
 }
 
+function isVerificationCodeValid(currentTimeIn, verificationTimeIn){
+    const currentTime = new Date(currentTimeIn);
+    const verificationTime = new Date(verificationTimeIn);
+    const diffMs = Math.abs(verificationTime - currentTime);
+    const diffHours = diffMs / (1000 * 60 * 60);
+    if (diffHours > 1){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+
 module.exports = { 
-    generateValidationCode 
+    generateValidationCode,
+    isVerificationCodeValid,
 };
