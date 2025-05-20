@@ -6,6 +6,7 @@ const router = express.Router();
 // a. authenication
 router.post('/auth/addUser', controller.addUser);
 router.post('/auth/verifyUser', controller.verifyUser);
+router.post('/auth/login', controller.login);
 
 //b. user management
 router.get('/users/getUsers', controller.getUsers);

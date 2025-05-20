@@ -80,6 +80,34 @@ const verfiyUser = async (req, res) =>{
     }
 }
 
+const login = async(req, res) =>{
+    const {email, password} = req.body;
+    if (!email || !password){
+        return res.status(400).json({error: 'Missing required fields: email and/or password'});
+    }
+    try{
+        const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
+        if (result.rows.length === 0){
+            return res.status(404).json({error: 'User not found'});
+        }
+        
+        const user = result.rows[0];
+        const isMatched = await bcrypt.compare(password, user.password_hash);
+        if (!isMatched){
+            return res.status(401).json({error: 'Incorrect password'});
+        }
+
+        if (!user.is_verified){
+            return res.status(403).json({error: 'Please verify your email before logging in'});
+        }
+        return res.status(201).json({message: 'Successfully logged in!'});
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal server error'});        
+    }
+}
+
 const removeUser = async (req, res) =>{
     const { email, password} = req.body;
 
@@ -293,5 +321,6 @@ module.exports = {
     addCategory,
     removeCategory,
     getUsersCategories,
-    verifyUser,
+    verfiyUser,
+    login,
 }

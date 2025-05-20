@@ -48,6 +48,7 @@ d. user_categories
 a. authenication
  - /api/auth/register (POST): Adds a new user
  - /api/auth/verify (POST): Verifies a new user
+ - /api/auth/login (POST): Logins in a user with an existing account
 
 b. user management
 - /api/users/getUsers (GET): Returns a list of all users
