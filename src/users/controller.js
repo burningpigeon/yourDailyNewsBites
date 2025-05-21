@@ -294,6 +294,17 @@ const removeCategory = async(req, res) => {
 };
 
 const getStories = async(req, res) =>{
+    const { date, category } = req.body;
+    if (!date || !category) {
+        return res.status(400).json({ error: 'Missing required fields: date and/or category' });
+    }
+    try{
+    }
+
+    catch(err){
+        console.log(err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 
 };
 
@@ -327,4 +338,5 @@ module.exports = {
     getUsersCategories,
     verfiyUser,
     login,
+    getStories
 }
