@@ -41,7 +41,7 @@ function getHeadlines(category) {
     return axios.get(url, { params })
         .then(response => {
             const articles = response.data.articles || [];
-            return articles.map(article => ({
+            return articles.slice(0, 3).map(article => ({
                 title: article.title,
                 link: article.url,
                 name: article.source.name,
@@ -77,8 +77,4 @@ function breakHeadlines(headlines, categoryHeadlinesIn) {
     const category = new CategoryHeadlines('sports');
     const topStories = await getHeadlines(category);
     console.log(topStories);
-    if (topStories) {
-        breakHeadlines(topStories, category);
-        console.log(category);
-    }
 })();

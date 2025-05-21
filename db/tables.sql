@@ -27,3 +27,13 @@ CREATE TABLE user_categories (
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
 
+CREATE TABLE stories (
+    story_id SERIAL PRIMARY KEY,
+    category_id INT NOT NULL,
+    date VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    link VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);

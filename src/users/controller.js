@@ -293,6 +293,10 @@ const removeCategory = async(req, res) => {
     }
 };
 
+const getStories = async(req, res) =>{
+
+};
+
 const getUsersCategories = async(req, res) =>{
     const {email} = req.query;
     if (!email ) {

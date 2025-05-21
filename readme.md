@@ -43,6 +43,15 @@ c. categories
 d. user_categories
  - user_id (Primary and Foreign Key)
  - category_id (Primary and Foreign Key)
+
+e. news
+ - news_id (Primary Key)
+ - category_id (Foreign Key)
+ - date
+ - title
+ - link
+ - name
+ - description
 ```
 
 **Endpoints**
@@ -63,4 +72,7 @@ c. categories
 - /api/categories/getCategories (GET): Return's a specific user's categories
 - /api/categories/addCategory (POST): Adds a new category to a users' account
 - /api/categories/removeCategory (DELETE): Removes a category from a user's account
+
+d. news
+- /api/news/getStories (GET): Returns all daily stories for a specific category
 ```
