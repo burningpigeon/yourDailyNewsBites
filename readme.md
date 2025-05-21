@@ -6,6 +6,8 @@ yourDailyNewsBites/
 ├── db/
  |   ├── ...allStoredProcedures.sql
 ├── src/
+ |   ├── news
+  |   |   ├── newsMain.js
  |   ├── users
  |   |   ├── controller.js
  |   |   ├── db_access.js

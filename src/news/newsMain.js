@@ -1,14 +1,13 @@
 require('dotenv').config();
 const axios = require('axios');
 const apiKey = process.env.NEWS_API_KEY; 
-console.log('Loaded ENV:', process.env);
 
 class Story {
     constructor() {
         this.title = null;
         this.link = null;
         this.summary = null;
-        this.image = null;
+        this.source = null;
     }
 }
 
@@ -21,10 +20,9 @@ class CategoryHeadlines {
     }
 }
 
-function getHeadlines(apiKey, category) {
+function getHeadlines(category) {
     const endDate = new Date();
     const startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
-    console.log('API KEY:', apiKey); // ⬅️ Should print your key, not undefined
     if (!apiKey) {
         console.error('api key is undefined');
         process.exit(1);
@@ -32,13 +30,13 @@ function getHeadlines(apiKey, category) {
     
     const url = 'https://gnews.io/api/v4/top-headlines';
     const params = {
-        topic: category, // Use 'topic', not 'category'
+        topic: category.topic,
         from: startDate.toISOString(),
         to: endDate.toISOString(),
         lang: 'en',
-        max: 3,
-        token: apiKey // Use 'token', not 'apikey'
+        token: apiKey 
     };
+    console.log(params)
     
     return axios.get(url, { params })
         .then(response => {
@@ -46,13 +44,12 @@ function getHeadlines(apiKey, category) {
             return articles.map(article => ({
                 title: article.title,
                 link: article.url,
-                image: article.image,
-                description: article.description
+                name: article.source.name,
+                description: article.description,
             }));
         })
         .catch(error => {
             console.error(`Error: ${error.response?.status} - ${error.response?.statusText}`);
-            console.log(error.response?.data || error.message);
             return null;
         });
 }
@@ -61,26 +58,27 @@ function breakHeadlines(headlines, categoryHeadlinesIn) {
     if (headlines.length >= 3) {
         categoryHeadlinesIn.story1.title = headlines[0].title;
         categoryHeadlinesIn.story1.link = headlines[0].link;
-        categoryHeadlinesIn.story1.image = headlines[0].image;
         categoryHeadlinesIn.story1.summary = headlines[0].description;
+        categoryHeadlinesIn.story1.source = headlines[0].name;
 
         categoryHeadlinesIn.story2.title = headlines[1].title;
         categoryHeadlinesIn.story2.link = headlines[1].link;
-        categoryHeadlinesIn.story2.image = headlines[1].image;
         categoryHeadlinesIn.story2.summary = headlines[1].description;
+        categoryHeadlinesIn.story2.source = headlines[1].name;
 
         categoryHeadlinesIn.story3.title = headlines[2].title;
         categoryHeadlinesIn.story3.link = headlines[2].link;
-        categoryHeadlinesIn.story3.image = headlines[2].image;
         categoryHeadlinesIn.story3.summary = headlines[2].description;
+        categoryHeadlinesIn.story3.source = headlines[2].name;
     }
 }
 
 (async () => {
-    const tech = new CategoryHeadlines('technology');
-    const topStories = await getHeadlines(apiKey, tech.topic);
+    const category = new CategoryHeadlines('sports');
+    const topStories = await getHeadlines(category);
+    console.log(topStories);
     if (topStories) {
-        breakHeadlines(topStories, tech);
-        console.log(tech);
+        breakHeadlines(topStories, category);
+        console.log(category);
     }
 })();
