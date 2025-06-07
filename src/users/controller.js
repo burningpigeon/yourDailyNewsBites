@@ -1,6 +1,6 @@
 const pool = require('./db_access');
 const bcrypt = require('bcrypt');
-const { generateValidationCode } = require('./utils');
+const { generateValidationCode, isVerificationCodeValid, getCurrentTimestamp } = require('./utils');
 
 
 const getUsers = (req, res) => {
@@ -24,6 +24,7 @@ const addUser = async(req, res) => {
         return res.status(400).json({error: 'Passwords have to match'});
     }
 
+    const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
 
     try{
@@ -41,10 +42,10 @@ const addUser = async(req, res) => {
     }
 };
 
-const verfiyUser = async (req, res) =>{
-    const {email, verificationCode, currentTime} = req.body;
-    if (!email || !verificationCode || !currentTime){
-        return res.status(400).json({error: 'Missing required fields: email, verification code, current time'});
+const verifyUser = async (req, res) =>{
+    const {email, verificationCode, } = req.body;
+    if (!email || !verificationCode ){
+        return res.status(400).json({error: 'Missing required fields: email, verification code'});
     }
     try{
         const result = await pool.query('SELECT * FROM get_user_by_email($1)', [email]);
@@ -57,12 +58,12 @@ const verfiyUser = async (req, res) =>{
             return res.status(400).json({error: 'User not registered or already verified.'});
         }
 
-        if ( verificationCode != verficationInfo[0]){
+        if ( verificationCode != verficationInfo.rows[0].verification_code){
             return res.status(400).json({error: 'Verfication code is incorrect'});
         }
 
         const currentTime = getCurrentTimestamp();
-        const verificationCodeValid = isVerificationCodeValid(currentTime, verficationInfo[1]);
+        const verificationCodeValid = isVerificationCodeValid(currentTime, verficationInfo.rows[0].created_at);
 
         if (verificationCodeValid === false){
             const newVerificationCode = generateValidationCode();
@@ -336,7 +337,7 @@ module.exports = {
     addCategory,
     removeCategory,
     getUsersCategories,
-    verfiyUser,
+    verifyUser,
     login,
     getStories
 }
